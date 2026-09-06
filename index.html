@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="MobileOptimized" content="width">
+    <meta name="theme-color" content="#0b0e14">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>NoorEdu — Tuition Manager</title>
+
+    <link rel="stylesheet" href="vendor/css/bootstrap.min.css">
+    <link rel="stylesheet" href="vendor/css/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="logo-192.png">
+    <link rel="apple-touch-icon" href="logo-192.png">
+</head>
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+    <div class="topbar-inner">
+        <div class="tb-left">
+            <div class="logo-chip"><img src="logo.svg" alt="Noor" width="42" height="42"></div>
+            <div class="tb-brand">
+                <span class="tb-title">Noor</span>
+                <span class="tb-sub">Tuition Center</span>
+            </div>
+        </div>
+        <div class="tb-right">
+            <button class="icon-btn" onclick="nav('settings')" aria-label="settings"><i class="bi bi-gear"></i></button>
+            <button class="icon-btn" id="themeToggle" onclick="toggleTheme()" aria-label="theme">
+                <i class="bi bi-sun-fill"></i>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- ================= MAIN ================= -->
+<main class="container-app">
+
+    <!-- ===== DASHBOARD ===== -->
+    <section id="page-dashboard" class="page active">
+        <div class="dash-hello">
+            <div>
+                <div class="hello-eyebrow" id="helloEyebrow">—</div>
+                <h1 class="hello-title" id="helloTitle">Assalamu Alaikum 👋</h1>
+                <p class="hello-muted" id="helloSub">Manage Noor Tuition Center</p>
+            </div>
+            <button class="fab-add" onclick="nav('add')"><i class="bi bi-plus-lg"></i></button>
+        </div>
+
+        <!-- Onboarding (shown only when empty) -->
+        <div class="onboard" id="onboardCard" style="display:none;">
+            <div class="ob-ico">🎓</div>
+            <div class="ob-text">Welcome! No students yet.<br>Add your first student to get started.</div>
+            <button class="btn-main" onclick="nav('add')" style="margin-top:12px"><i class="bi bi-person-plus"></i> Add Student</button>
+        </div>
+
+        <!-- KPI grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon sc-blue"><i class="bi bi-people-fill"></i></div>
+                <div class="stat-num" id="stStudents">0</div>
+                <div class="stat-lab">Students</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon sc-green"><i class="bi bi-journals"></i></div>
+                <div class="stat-num" id="stClasses">0</div>
+                <div class="stat-lab">Classes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon sc-violet"><i class="bi bi-emoji-smile-fill"></i></div>
+                <div class="stat-num" id="stPresent">0</div>
+                <div class="stat-lab">Today Present</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon sc-amber"><i class="bi bi-cash-stack"></i></div>
+                <div class="stat-num" id="stFees">₹0</div>
+                <div class="stat-lab">Fees Collected</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="glass-card">
+            <div class="gc-head">
+                <span class="gc-title"><i class="bi bi-graph-up text-primary me-1"></i>Attendance (7 days)</span>
+                <span class="gc-pill" id="attWeekAvg">—</span>
+            </div>
+            <div class="chart-box"><canvas id="attChart"></canvas></div>
+        </div>
+
+        <div class="glass-card">
+            <div class="gc-head">
+                <span class="gc-title"><i class="bi bi-pie-chart text-success me-1"></i>Students by Class</span>
+            </div>
+            <div class="chart-box"><canvas id="classChart"></canvas></div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="quick-row">
+            <button class="quick" onclick="nav('students')"><span class="q-ico i-1"><i class="bi bi-people"></i></span><span>Students</span></button>
+            <button class="quick" onclick="nav('attendance')"><span class="q-ico i-2"><i class="bi bi-clipboard2-check"></i></span><span>Daybook</span></button>
+            <button class="quick" onclick="nav('fees')"><span class="q-ico i-3"><i class="bi bi-cash-coin"></i></span><span>Fees</span></button>
+            <button class="quick" onclick="showDue()"><span class="q-ico i-4"><i class="bi bi-bell"></i></span><span>Due Fees</span></button>
+        </div>
+
+        <!-- Activity -->
+        <div class="glass-card">
+            <div class="gc-head">
+                <span class="gc-title"><i class="bi bi-clock-history me-1"></i>Recent Activity</span>
+            </div>
+            <div id="activityFeed" class="feed"></div>
+        </div>
+    </section>
+
+    <!-- ===== ADD / EDIT STUDENT ===== -->
+    <section id="page-add" class="page">
+        <div class="page-top">
+            <button class="back-btn" onclick="nav('dashboard')"><i class="bi bi-arrow-left"></i></button>
+            <div>
+                <h2 class="page-title" id="addTitle">New Student</h2>
+                <p class="page-sub">Register a new student</p>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <form id="studentForm" autocomplete="off" onsubmit="return false;">
+                <input type="hidden" id="editId">
+                <div class="f-group">
+                    <label>Full Name <i class="text-danger">*</i></label>
+                    <input class="f-in" id="sName" placeholder="Student name" required>
+                </div>
+                <div class="f-row">
+                    <div class="f-group">
+                        <label>Class <i class="text-danger">*</i></label>
+                        <select class="f-in" id="sClass" required></select>
+                    </div>
+                    <div class="f-group">
+                        <label>Section</label>
+                        <select class="f-in" id="sSection"></select>
+                    </div>
+                </div>
+                <div class="f-row">
+                    <div class="f-group">
+                        <label>Gender <i class="text-danger">*</i></label>
+                        <select class="f-in" id="sGender" required>
+                            <option value="">—</option>
+                            <option>Boy</option>
+                            <option>Girl</option>
+                        </select>
+                    </div>
+                    <div class="f-group">
+                        <label>Age</label>
+                        <input type="number" class="f-in" id="sAge" min="3" max="20" placeholder="Years">
+                    </div>
+                </div>
+                <div class="f-group">
+                    <label>Father's Name</label>
+                    <input class="f-in" id="sFather" placeholder="Father name">
+                </div>
+                <div class="f-group">
+                    <label>Phone <i class="text-danger">*</i></label>
+                    <input type="tel" class="f-in" id="sPhone" placeholder="03xx-xxxxxxx" required>
+                </div>
+                <div class="f-row">
+                    <div class="f-group">
+                        <label>Monthly Fee (₹)</label>
+                        <input type="number" class="f-in" id="sFee" min="0" placeholder="0" inputmode="numeric">
+                    </div>
+                    <div class="f-group">
+                        <label>Admission Date</label>
+                        <input type="date" class="f-in" id="sDate">
+                    </div>
+                </div>
+                <div class="f-group">
+                    <label>Address</label>
+                    <input class="f-in" id="sAddress" placeholder="Address">
+                </div>
+                <div class="f-group">
+                    <label>Notes</label>
+                    <textarea class="f-in" id="sNotes" rows="2" placeholder="Optional"></textarea>
+                </div>
+                <button type="submit" class="btn-main"><i class="bi bi-check2-circle"></i> Save Student</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ===== STUDENTS ===== -->
+    <section id="page-students" class="page">
+        <div class="page-top">
+            <button class="back-btn" onclick="nav('dashboard')"><i class="bi bi-arrow-left"></i></button>
+            <div>
+                <h2 class="page-title">Students</h2>
+                <p class="page-sub"><span id="countText">0</span> enrolled</p>
+            </div>
+            <button class="mini-add" onclick="nav('add')"><i class="bi bi-person-plus"></i></button>
+        </div>
+
+        <div class="search-bar">
+            <i class="bi bi-search"></i>
+            <input type="search" placeholder="Search name, father, phone..." id="searchInput" oninput="renderStudents()">
+        </div>
+
+        <div class="chips-scroll">
+            <span class="chip active" data-cls="" onclick="pickClass(this)">All <b id="chipAll">0</b></span>
+            <span id="chipWrap"></span>
+        </div>
+
+        <div id="studentsRows" class="stu-list"></div>
+    </section>
+
+    <!-- ===== ATTENDANCE ===== -->
+    <section id="page-attendance" class="page">
+        <div class="page-top">
+            <button class="back-btn" onclick="nav('dashboard')"><i class="bi bi-arrow-left"></i></button>
+            <div>
+                <h2 class="page-title">Attendance</h2>
+                <p class="page-sub">Mark who's here today</p>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="f-row">
+                <div class="f-group">
+                    <label>Date</label>
+                    <input type="date" class="f-in" id="attDate" onchange="loadAttendance()">
+                </div>
+                <div class="f-group">
+                    <label>Class</label>
+                    <select class="f-in" id="attClass" onchange="loadAttendance()"></select>
+                </div>
+            </div>
+            <div class="att-controls">
+                <button class="btn-soft green" onclick="saveAttendance()"><i class="bi bi-save"></i> Save</button>
+                <button class="btn-soft blue" onclick="fillAll('present')"><i class="bi bi-check2-all"></i> All Present</button>
+                <button class="btn-soft red" onclick="fillAll('absent')"><i class="bi bi-x-lg"></i> All Absent</button>
+            </div>
+            <div id="attSummary" class="att-summary"></div>
+        </div>
+
+        <div id="attList" class="att-list"></div>
+
+        <div class="glass-card">
+            <div class="gc-head"><span class="gc-title"><i class="bi bi-bar-chart me-1"></i>Report</span></div>
+            <div id="attReportBody"></div>
+        </div>
+    </section>
+
+    <!-- ===== FEES ===== -->
+    <section id="page-fees" class="page">
+        <div class="page-top">
+            <button class="back-btn" onclick="nav('dashboard')"><i class="bi bi-arrow-left"></i></button>
+            <div>
+                <h2 class="page-title">Fees</h2>
+                <p class="page-sub">Track monthly payments</p>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="f-row">
+                <div class="f-group">
+                    <label>Month</label>
+                    <select class="f-in" id="feeMonth" onchange="loadFees()"></select>
+                </div>
+                <div class="f-group">
+                    <label>Class</label>
+                    <select class="f-in" id="feeClass" onchange="loadFees()"></select>
+                </div>
+            </div>
+            <div class="fee-progress">
+                <div class="fp-text"><span id="feePaidText">0 / 0 paid</span><span id="feePct">0%</span></div>
+                <div class="fp-bar"><div class="fp-fill" id="feeFill"></div></div>
+            </div>
+            <button class="btn-soft red full" onclick="markAllPaid()"><i class="bi bi-check2-all"></i> Mark All Paid</button>
+        </div>
+
+        <div id="feeTable" class="fee-table"></div>
+
+        <div class="glass-card">
+            <div class="gc-head"><span class="gc-title"><i class="bi bi-receipt"></i> Fee Report</span></div>
+            <div id="feeReport"></div>
+        </div>
+    </section>
+
+    <!-- ===== SETTINGS ===== -->
+    <section id="page-settings" class="page">
+        <div class="page-top">
+            <button class="back-btn" onclick="nav('dashboard')"><i class="bi bi-arrow-left"></i></button>
+            <div>
+                <h2 class="page-title">Settings</h2>
+                <p class="page-sub">Sab kuch yahan se manage karo</p>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="gc-title" style="margin-bottom:12px"><i class="bi bi-buildings me-1"></i> Center Name</div>
+            <div class="f-group">
+                <input class="f-in" id="setCenterName" placeholder="Noor Tuition Center">
+            </div>
+            <button class="btn-soft green full" onclick="saveCenter()"><i class="bi bi-check2"></i> Save Center Name</button>
+        </div>
+
+        <div class="glass-card">
+            <div class="gc-title" style="margin-bottom:12px"><i class="bi bi-currency-exchange me-1"></i> Currency Symbol</div>
+            <div class="f-group">
+                <input class="f-in" id="setCurrency" maxlength="4" placeholder="₹">
+            </div>
+            <button class="btn-soft green full" onclick="saveCurrency()"><i class="bi bi-check2"></i> Save</button>
+        </div>
+
+        <div class="glass-card">
+            <div class="gc-title" style="margin-bottom:6px"><i class="bi bi-arrow-repeat me-1"></i> Backup / Move Data</div>
+            <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px">Kisi aur phone/computer par same data chalana ho to: yahan <b>Download/Copy</b> karo → dusri device par app mein <b>Import</b> karo. Data cloud mein nahi jaata — sirf aapki device par rehta hai.</p>
+            <input type="file" id="fileImport" accept=".json,application/json" style="display:none" onchange="importFile(event)">
+            <div class="f-group" style="margin-bottom:10px">
+                <label>Import from file</label>
+                <button class="btn-soft blue full" onclick="$('fileImport').click()"><i class="bi bi-folder2-open"></i> Choose backup file</button>
+            </div>
+            <div class="f-group" style="margin-bottom:10px">
+                <label>Or paste backup data here</label>
+                <textarea class="f-in" id="importText" rows="3" placeholder="Paste copied data..."></textarea>
+            </div>
+            <div class="att-controls" style="grid-template-columns:1fr 1fr 1fr">
+                <button class="btn-soft green" onclick="exportBackup()"><i class="bi bi-download"></i> Download</button>
+                <button class="btn-soft blue" onclick="copyData()"><i class="bi bi-clipboard"></i> Copy</button>
+                <button class="btn-soft red" onclick="importFromText()"><i class="bi bi-upload"></i> Import</button>
+            </div>
+        </div>
+
+        <div class="glass-card" style="border-color:rgba(248,113,113,.35)">
+            <div class="gc-title" style="margin-bottom:10px;color:var(--red)"><i class="bi bi-exclamation-triangle me-1"></i> Delete All Data</div>
+            <button class="btn-soft red full" onclick="clearAll()"><i class="bi bi-trash"></i> Erase Everything</button>
+            <p style="font-size:.72rem;color:var(--muted);margin:10px 0 0">Sab students, attendance aur fees records hamesha ke liye delete ho jayenge.</p>
+        </div>
+
+        <p style="text-align:center;font-size:.7rem;color:var(--muted);margin:8px 0 20px">NoorEdu v4 · fully offline · data stays on this device</p>
+    </section>
+
+</main>
+
+<!-- ================= BOTTOM NAV (mobile) ================= -->
+<nav class="bottom-nav">
+    <button class="bnav active" data-page="dashboard" onclick="nav('dashboard')"><i class="bi bi-house-door"></i><span>Home</span></button>
+    <button class="bnav" data-page="students" onclick="nav('students')"><i class="bi bi-people"></i><span>Kids</span></button>
+    <button class="bnav bnav-add" data-page="add" onclick="nav('add')"><i class="bi bi-plus-lg"></i></button>
+    <button class="bnav" data-page="attendance" onclick="nav('attendance')"><i class="bi bi-clipboard2-check"></i><span>Daybook</span></button>
+    <button class="bnav" data-page="fees" onclick="nav('fees')"><i class="bi bi-cash-coin"></i><span>Fees</span></button>
+</nav>
+
+<!-- Toasts (non-blocking, can never get stuck) -->
+<div id="toastBox" class="toast-box"></div>
+
+<!-- Scripts - all local, works offline -->
+<script src="vendor/js/chart.umd.min.js"></script>
+<script src="vendor/js/sweetalert2.all.min.js"></script>
+<script src="vendor/js/bootstrap.bundle.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
