@@ -803,10 +803,22 @@ function showDue() {
     });
 }
 
-/* ---------- SETTINGS (no code needed) ---------- */
+/* ---------- SETTINGS ---------- */
+function applyBranding() {
+    const name = appData.settings.centerName || 'Noor Tuition Center';
+    const short = (name.trim().split(/\s+/)[0] || 'Noor');
+    const sub = name.trim().split(/\s+/).slice(1).join(' ');
+    const t = document.querySelector('.tb-title');
+    const sb = document.querySelector('.tb-sub');
+    if (t) t.textContent = short;
+    if (sb) sb.textContent = sub || (short.toLowerCase() === 'noor' ? 'Tuition Center' : 'Tuition Center');
+    document.title = name + ' - Tuition Manager';
+    if ($('helloSub')) $('helloSub').textContent = name;
+}
 function loadSettings() {
     $('setCenterName').value = appData.settings.centerName || '';
     $('setCurrency').value = appData.settings.currency || '₹';
+    applyBranding();
 }
 function saveCenter() {
     const v = $('setCenterName').value.trim();
@@ -814,6 +826,7 @@ function saveCenter() {
     save();
     toast('Center name saved', 'ok');
     renderDashboard();
+    applyBranding();
 }
 function saveCurrency() {
     const v = $('setCurrency').value.trim().slice(0, 4);
@@ -965,6 +978,7 @@ function init() {
     load();
     initTheme();
     setupInstall();
+    applyBranding();
     fillClassOptions();
     $('attDate').value = todayISO();
     attDate = todayISO();
