@@ -1,31 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="nb" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#6c7cff"/>
-      <stop offset=".55" stop-color="#8b5cf6"/>
-      <stop offset="1" stop-color="#f472b6"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="45%" stop-color="#0d9488"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
     </linearGradient>
-    <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffffff" stop-opacity=".20"/>
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    <linearGradient id="star" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
     </linearGradient>
+    <filter id="glow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#fff" flood-opacity="0.35"/>
+    </filter>
   </defs>
 
-  <!-- tile -->
-  <rect x="8" y="8" width="496" height="496" rx="106" fill="url(#nb)"/>
-  <rect x="8" y="8" width="496" height="496" rx="106" fill="url(#glow)"/>
-  <rect x="8" y="8" width="496" height="496" rx="106" fill="none" stroke="#ffffff" stroke-opacity=".20" stroke-width="3"/>
+  <!-- background -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="112" fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="4"/>
 
-  <!-- letter N -->
-  <g fill="none" stroke="#ffffff" stroke-width="46" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M170 146 V362"/>
-    <path d="M342 146 V362"/>
-    <path d="M170 362 L342 146"/>
+  <!-- book pages behind N (subtle) -->
+  <g opacity="0.22" fill="#fff">
+    <path d="M100,268 Q100,255 140,252 L190,340 L100,362 Z"/>
+    <path d="M412,268 Q412,255 372,252 L322,340 L412,362 Z"/>
   </g>
 
-  <!-- light: cross sparkle top-right -->
-  <path fill="#ffffff" d="M408 70 L415 85 L430 92 L415 99 L408 114 L401 99 L386 92 L401 85 Z"/>
+  <!-- main N letter -->
+  <g fill="none" stroke="#fff" stroke-width="56" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+    <path d="M168 148 V368"/>
+    <path d="M344 148 V368"/>
+    <path d="M168 368 L344 148"/>
+  </g>
 
-  <!-- light: small sparkle bottom-left -->
-  <path fill="#ffffff" opacity=".9" d="M104 400 L110 410 L120 416 L110 422 L104 432 L98 422 L88 416 L98 410 Z"/>
+  <!-- golden star -->
+  <g transform="translate(256,88)">
+    <polygon points="0,-44 10,-14 44,-14 17,5 26,40 0,20 -26,40 -17,5 -44,-14 -10,-14" fill="url(#star)" filter="url(#glow)"/>
+  </g>
+
+  <!-- sparkle top-right -->
+  <path fill="#fff" opacity="0.8" d="M414,62 L422,78 L438,86 L422,94 L414,110 L406,94 L390,86 L406,78Z"/>
+
+  <!-- sparkle bottom-left -->
+  <path fill="#fff" opacity="0.55" d="M90,400 L97,413 L110,418 L97,423 L90,436 L83,423 L70,418 L83,413Z"/>
+
+  <!-- tiny sparkle mid-right -->
+  <circle cx="430" cy="290" r="4" fill="#fff" opacity="0.45"/>
+  <circle cx="82" cy="155" r="3" fill="#fff" opacity="0.35"/>
 </svg>

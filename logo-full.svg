@@ -1,37 +1,49 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360">
   <defs>
-    <linearGradient id="nb2" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#6c7cff"/>
-      <stop offset=".55" stop-color="#8b5cf6"/>
-      <stop offset="1" stop-color="#f472b6"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="348" y2="348" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="45%" stop-color="#0d9488"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
     </linearGradient>
-    <linearGradient id="glow2" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffffff" stop-opacity=".20"/>
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    <linearGradient id="star" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
     </linearGradient>
-    <linearGradient id="nword" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#ffffff"/>
-      <stop offset=".6" stop-color="#dfe4ff"/>
-      <stop offset="1" stop-color="#c9b8ff"/>
+    <filter id="glow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#fff" flood-opacity="0.35"/>
+    </filter>
+    <linearGradient id="txt" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
     </linearGradient>
   </defs>
 
-  <!-- emblem tile -->
-  <rect x="6" y="6" width="348" height="348" rx="74" fill="url(#nb2)"/>
-  <rect x="6" y="6" width="348" height="348" rx="74" fill="url(#glow2)"/>
-  <rect x="6" y="6" width="348" height="348" rx="74" fill="none" stroke="#ffffff" stroke-opacity=".20" stroke-width="3"/>
+  <!-- emblem -->
+  <rect x="6" y="6" width="348" height="348" rx="80" fill="url(#bg)"/>
+  <rect x="6" y="6" width="348" height="348" rx="80" fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="3"/>
 
-  <!-- letter N -->
-  <g fill="none" stroke="#ffffff" stroke-width="32" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M120 106 V252"/>
-    <path d="M240 106 V252"/>
-    <path d="M120 252 L240 106"/>
+  <!-- book pages behind N -->
+  <g opacity="0.2" fill="#fff">
+    <path d="M36,198 Q36,188 68,186 L118,288 L36,306 Z"/>
+    <path d="M324,198 Q324,188 292,186 L242,288 L324,306 Z"/>
   </g>
 
-  <!-- cross sparkle -->
-  <path fill="#ffffff" d="M285 52 L290 61 L299 66 L290 71 L285 80 L280 71 L271 66 L280 61 Z"/>
+  <!-- main N letter -->
+  <g fill="none" stroke="#fff" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+    <path d="M118 102 V270"/>
+    <path d="M242 102 V270"/>
+    <path d="M118 270 L242 102"/>
+  </g>
+
+  <!-- golden star -->
+  <g transform="translate(180,60)">
+    <polygon points="0,-34 8,-11 34,-11 13,4 20,31 0,15 -20,31 -13,4 -34,-11 -8,-11" fill="url(#star)" filter="url(#glow)"/>
+  </g>
+
+  <!-- sparkle -->
+  <path fill="#fff" opacity="0.75" d="M302,38 L307,50 L319,55 L307,60 L302,72 L297,60 L285,55 L297,50Z"/>
 
   <!-- wordmark -->
-  <text x="392" y="208" font-family="'Segoe UI', Arial, sans-serif" font-size="150" font-weight="900" fill="url(#nword)" letter-spacing="4">Noor</text>
-  <text x="400" y="280" font-family="'Segoe UI', Arial, sans-serif" font-size="36" font-weight="700" fill="#9aa6c8" letter-spacing="14">TUITION CENTER</text>
+  <text x="396" y="198" font-family="'Segoe UI', Arial, Helvetica, sans-serif" font-size="148" font-weight="900" fill="url(#txt)" letter-spacing="4">Noor</text>
+  <text x="402" y="268" font-family="'Segoe UI', Arial, Helvetica, sans-serif" font-size="34" font-weight="700" fill="#5eead4" letter-spacing="14">TUITION CENTER</text>
 </svg>
