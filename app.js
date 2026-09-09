@@ -161,11 +161,20 @@ function greeting() {
     return 'Good Evening';
 }
 
+function curMonthKey() {
+    return mKey(MONTHS[new Date().getMonth()]);
+}
+function feeRec(id) {
+    return (appData.mf[id] || {})[curMonthKey()] || {};
+}
 function totalFeesCollected() {
     let sum = 0;
     appData.students.forEach(s => {
-        const paid = appData.mf[s.id] || {};
-        if (paid.paid && paid.amount) sum += Number(paid.amount);
+        const months = appData.mf[s.id] || {};
+        Object.keys(months).forEach(k => {
+            const r = months[k];
+            if (r && r.amount) sum += Number(r.amount);
+        });
     });
     return sum;
 }
@@ -175,7 +184,7 @@ function drawAttChart() {
     const labs = weeksLabel();
     const vals = labs.map((l, i) => {
         const d = new Date();
-        d.setDate(d.getDate() - (5 - i));
+        d.setDate(d.getDate() - (6 - i));
         const key = keyOfDate(d);
         const a = appData.attendance[key];
         if (!a) return 0;
@@ -183,7 +192,7 @@ function drawAttChart() {
     });
     const totalAvail = labs.reduce((m, l, i) => {
         const d = new Date();
-        d.setDate(d.getDate() - (5 - i));
+        d.setDate(d.getDate() - (6 - i));
         const a = appData.attendance[keyOfDate(d)];
         return m + (a ? Object.keys(a).length : 0);
     }, 0);
@@ -233,13 +242,14 @@ function drawClassChart() {
     }
     const box = cv.closest('.chart-box');
     if (box.querySelector('.feed-empty')) box.innerHTML = '<canvas id="classChart"></canvas>';
+    const cvs = $('classChart');
 
     if (!window.Chart) return;
     if (classChartObj) classChartObj.destroy();
     const dark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
     const txt = dark ? '#8b93a7' : '#6b7280';
     const pal = ['#6c7cff', '#34d399', '#f59e0b', '#f472b6', '#22d3ee', '#a78bfa', '#fb7185', '#facc15', '#4ade80', '#60a5fa'];
-    classChartObj = new Chart(cv, {
+    classChartObj = new Chart(cvs, {
         type: 'doughnut',
         data: { labels: labels, datasets: [{ data: counts, backgroundColor: pal, borderWidth: 0, hoverOffset: 4 }] },
         options: {
@@ -297,16 +307,16 @@ function renderStudents() {
     }
 
     row.innerHTML = list.map(s => {
-        const paid = appData.mf[s.id] || {};
+        const rec = feeRec(s.id);
         let status;
-        if (paid.paid) status = '<span class="pill pill-green">Paid</span>';
-        else if (s.fee) status = paid.amount ? '<span class="pill pill-amber">Partial ' + money(paid.amount) + '</span>' : '<span class="pill pill-red">Due ' + money(s.fee) + '</span>';
+        if (rec.paid) status = '<span class="pill pill-green">Paid</span>';
+        else if (s.fee) status = rec.amount ? '<span class="pill pill-amber">Partial ' + money(rec.amount) + '</span>' : '<span class="pill pill-red">Due ' + money(s.fee) + '</span>';
         else status = '';
         const clr = avatarColor(s.name);
         return '<div class="stu-card" onclick="showStudent(\'' + s.id + '\')">' +
             '<div class="stu-av" style="background:' + clr + '">' + esc(initials(s.name)) + '</div>' +
             '<div class="stu-info"><div class="stu-name">' + esc(s.name) + '</div>' +
-            '<div class="stu-cc">Class ' + esc(s.cls) + (s.section ? ' · ' + esc(s.section) : '') + (s.father ? ' · Phsb ' + esc(s.father) : '') + '</div></div>' +
+            '<div class="stu-cc">Class ' + esc(s.cls) + (s.section ? ' · ' + esc(s.section) : '') + (s.father ? ' · ' + esc(s.father) : '') + '</div></div>' +
             '<div class="stu-acts">' + status +
             '<button class="card-btn" onclick="event.stopPropagation();editStudent(\'' + s.id + '\')"><i class="bi bi-pencil"></i></button>' +
             '<button class="card-btn danger" onclick="event.stopPropagation();askDelete(\'' + s.id + '\')"><i class="bi bi-trash"></i></button></div>' +
@@ -329,10 +339,10 @@ function initials(name) {
 function showStudent(id) {
     const s = appData.students.find(x => x.id === id);
     if (!s) return;
-    const paid = appData.mf[id] || {};
-    const dueAmt = s.fee && !paid.paid ? Math.max(0, s.fee - (paid.amount || 0)) : 0;
-    const status = paid.paid ? '<span class="pill pill-green">Paid ✓</span>'
-        : (s.fee ? '<span class="pill pill-red">' + (dueAmt ? 'Due ' + money(dueAmt) : 'Partial ' + money(paid.amount)) + '</span>' : '<span class="pill pill-gray">No fee</span>');
+    const rec = feeRec(id);
+    const dueAmt = s.fee && !rec.paid ? Math.max(0, s.fee - (rec.amount || 0)) : 0;
+    const status = rec.paid ? '<span class="pill pill-green">Paid ✓</span>'
+        : (s.fee ? '<span class="pill pill-red">' + (dueAmt ? 'Due ' + money(dueAmt) : 'Partial ' + money(rec.amount)) + '</span>' : '<span class="pill pill-gray">No fee</span>');
     const row = (k, v) => '<div class="sd-row"><span>' + k + '</span><b>' + v + '</b></div>';
 
     Swal.fire({
@@ -354,15 +364,15 @@ function showStudent(id) {
         showCloseButton: true,
         allowOutsideClick: true,
         allowEscapeKey: true,
-        confirmButtonText: paid.paid ? '<i class="bi bi-pencil"></i> Edit' : '<i class="bi bi-cash-stack"></i> Mark paid',
+        confirmButtonText: rec.paid ? '<i class="bi bi-pencil"></i> Edit' : '<i class="bi bi-cash-stack"></i> Mark paid',
         showCancelButton: true,
         cancelButtonText: '<i class="bi bi-pencil-square"></i> Edit',
-        confirmButtonColor: paid.paid ? '#6c7cff' : '#34d399',
+        confirmButtonColor: rec.paid ? '#6c7cff' : '#34d399',
         cancelButtonColor: '#6c7cff',
         customClass: { popup: 'sw-dark' }
     }).then(r => {
         if (r.isConfirmed) {
-            if (paid.paid) { editStudent(id); }
+            if (rec.paid) { editStudent(id); }
             else { markFee(id); }
         } else if (r.dismiss === Swal.DismissReason.cancel) {
             editStudent(id);

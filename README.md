@@ -7,7 +7,9 @@ Nursery se 8th class tak ke bachon ke tuition center ka management system.
 - **Add Student**: Naya taliba register karna
 - **Students**: Tamam taliba ki list, search aur class filter
 - **Attendance**: Rozana haazri mark karna aur report dekhna
-- **Fees**: Mahinay ki fees management (Ada Shuda / Baqi)
+- **Fees**: Mahinay ki fees management (Ada Shuda / Baqi) — monthly collection report
+- **Backup**: Download JSON / copy to clipboard / import from file — data transfer between devices
+- **Offline PWA**: Works without internet; phone mein install karo (Add to Home Screen)
 
 ## Kaise Chalayen
 
@@ -43,10 +45,12 @@ Phone ke browser mein URL kholen, phir:
 ## Data Kahan Save Hota Hai?
 - Saara data browser ke `localStorage` mein save hota hai
 - Mobile par app delete karne par data bhi delete hoga
-- Backup ke liye export/import feature future mein add kiya ja sakta hai
+- Settings > Backup se data download/copy karke kisi bhi device par import kar sakte hain
 
 ## Project Structure
 - `index.html` - Main page
 - `style.css` - Styling (mobile-friendly responsive)
 - `app.js` - Application logic
+- `sw.js` - Service Worker (offline support)
 - `manifest.json` - PWA settings
+- `vendor/` - Bootstrap CSS/JS, Chart.js, SweetAlert2
