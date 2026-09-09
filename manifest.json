@@ -1,9 +1,11 @@
 {
+    "id": "./index.html",
     "name": "Noor — Tuition Center Manager",
     "short_name": "Noor",
     "description": "Offline tuition center manager - students, attendance, fees. Data stays on your phone.",
     "start_url": "./index.html",
     "display": "standalone",
+    "display_override": ["standalone", "minimal-ui"],
     "background_color": "#0b0e14",
     "theme_color": "#0b0e14",
     "orientation": "portrait",
@@ -21,6 +23,12 @@
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any"
+        },
+        {
+            "src": "logo-mask-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
         }
     ]
 }

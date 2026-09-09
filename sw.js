@@ -1,5 +1,5 @@
 /* NoorEdu service worker - network-first (always get latest, cache for offline) */
-const CACHE = 'nooredu-v3';
+const CACHE = 'nooredu-v4';
 const APP_SHELL = [
     './',
     './index.html',
@@ -8,7 +8,8 @@ const APP_SHELL = [
     './logo-192.png',
     './logo-512.png',
     './logo.svg',
-    './logo-full.svg'
+    './logo-full.svg',
+    './logo-mask-512.png'
 ];
 
 self.addEventListener('install', e => {

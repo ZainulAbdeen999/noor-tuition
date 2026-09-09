@@ -960,8 +960,14 @@ function installApp() {
         });
     } else if (isAndroid && isChrome) {
         Swal.fire({
-            title: 'Install App (Android Chrome)',
-            html: '<div class="sd-card" style="text-align:left;font-size:.85rem">Pehle <b>ek-bar aur page er refresh karo</b> (install ready hoga), phir dusre bar ye button dabao.<br><br>Ya browser ka <b>⋮ menu</b> kholo → <b>Install app</b> / <b>Add to Home screen</b>.</div>',
+            title: 'Install App (Android)',
+            html: '<div class="sd-card" style="text-align:left;font-size:.85rem"><b>Chrome ka ⋮ menu</b> kholo → <b>"Install app"</b> ka option dabao.<br><br>⚠️ Dhyaan: <b>"Add to Home screen"</b> mat dabana — wo sirf shortcut hota hai, app list me nahi aata. <b>"Install app"</b> waala hi asli app banata hai jo app list + home screen dono me dikhta hai.<br><br>Agar "Install app" nazar nahi aa raha to page <b>refresh karo</b> aur 1-2 minute ruko, phir dubara ⋮ menu kholo.</div>',
+            icon: 'info', confirmButtonText: 'OK', customClass: { popup: 'sw-dark' }
+        });
+    } else if (isAndroid) {
+        Swal.fire({
+            title: 'Install App (Android)',
+            html: '<div class="sd-card" style="text-align:left;font-size:.85rem"><b>Chrome browser</b> me is page ko kholo (WhatsApp/other browser me install option nahi hota).<br><br>Chrome me jao → ⋮ menu → <b>"Install app"</b> dabao. Asli app home screen par aa jayega.</div>',
             icon: 'info', confirmButtonText: 'OK', customClass: { popup: 'sw-dark' }
         });
     } else {
