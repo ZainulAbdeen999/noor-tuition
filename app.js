@@ -907,10 +907,38 @@ function clearAll() {
     });
 }
 
+/* ---------- PWA INSTALL ---------- */
+let installPrompt = null;
+let installBtn = null;
+function setupInstall() {
+    window.addEventListener('beforeinstallprompt', e => {
+        e.preventDefault();
+        installPrompt = e;
+        const btn = $('installBtn');
+        installBtn = btn;
+        if (btn) btn.style.display = '';
+    });
+    window.addEventListener('appinstalled', () => {
+        const btn = $('installBtn');
+        if (btn) btn.style.display = 'none';
+        if (installPrompt) installPrompt = null;
+    });
+}
+function installApp() {
+    if (!installPrompt) { toast('Install option available in browser menu (Add to Home Screen)', 'ok'); return; }
+    installPrompt.prompt();
+    installPrompt.userChoice.then(choice => {
+        if (choice.outcome === 'accepted') toast('App installed!', 'ok');
+        else toast('Install cancelled', 'err');
+        installPrompt = null;
+    });
+}
+
 /* ---------- INIT ---------- */
 function init() {
     load();
     initTheme();
+    setupInstall();
     fillClassOptions();
     $('attDate').value = todayISO();
     attDate = todayISO();
