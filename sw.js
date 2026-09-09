@@ -1,5 +1,5 @@
 /* NoorEdu service worker — app-shell cache for offline use & installability */
-const CACHE = 'nooredu-v1';
+const CACHE = 'nooredu-v2';
 const ASSETS = [
     './',
     './index.html',
