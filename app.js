@@ -931,6 +931,7 @@ function setupInstall() {
         installPrompt = e;
         if (installBtn) {
             installBtn.innerHTML = '<i class="bi bi-download"></i> Install App';
+            installBtn.classList.remove('disabled');
         }
     });
     window.addEventListener('appinstalled', () => {
@@ -940,6 +941,14 @@ function setupInstall() {
     });
 }
 function installApp() {
+    if (window.matchMedia('(display-mode: standalone)').matches || (navigator.standalone === true)) {
+        Swal.fire({
+            title: 'App Already Installed',
+            html: '<div class="sd-card" style="text-align:left;font-size:.85rem">Ye app aapke phone par <b>already installed</b> hai — home screen / app list me "<b>Noor</b>" naam se dekho.</div>',
+            icon: 'success', confirmButtonText: 'OK', customClass: { popup: 'sw-dark' }
+        });
+        return;
+    }
     if (installPrompt) {
         installPrompt.prompt();
         installPrompt.userChoice.then(choice => {
@@ -961,13 +970,13 @@ function installApp() {
     } else if (isAndroid && isChrome) {
         Swal.fire({
             title: 'Install App (Android)',
-            html: '<div class="sd-card" style="text-align:left;font-size:.85rem"><b>Chrome ka ⋮ menu</b> kholo → <b>"Install app"</b> ka option dabao.<br><br>⚠️ Dhyaan: <b>"Add to Home screen"</b> mat dabana — wo sirf shortcut hota hai, app list me nahi aata. <b>"Install app"</b> waala hi asli app banata hai jo app list + home screen dono me dikhta hai.<br><br>Agar "Install app" nazar nahi aa raha to page <b>refresh karo</b> aur 1-2 minute ruko, phir dubara ⋮ menu kholo.</div>',
+            html: '<div class="sd-card" style="text-align:left;font-size:.85rem"><b>Step 1:</b> Ye app <b>1 minute chat use karo</b> (kisi student ko add karo ya koi page open karo) — Chrome tabhi install ka option deta hai jab app "use" hui ho.<br><br><b>Step 2:</b> Ab page <b>refresh karo</b> (🔄)<br><br><b>Step 3:</b> Chrome ka <b>⋮ menu</b> kholo → <b>"Install app"</b> dabao<br><br>⚠️ <b>"Add to Home screen"</b> mat dabana — wo sirf shortcut hai. <b>"Install app"</b> hi asli app hai jo app list + home screen dono me dikhti hai.</div>',
             icon: 'info', confirmButtonText: 'OK', customClass: { popup: 'sw-dark' }
         });
     } else if (isAndroid) {
         Swal.fire({
             title: 'Install App (Android)',
-            html: '<div class="sd-card" style="text-align:left;font-size:.85rem"><b>Chrome browser</b> me is page ko kholo (WhatsApp/other browser me install option nahi hota).<br><br>Chrome me jao → ⋮ menu → <b>"Install app"</b> dabao. Asli app home screen par aa jayega.</div>',
+            html: '<div class="sd-card" style="text-align:left;font-size:.85rem"><b>Chrome browser</b> me is page ko kholo (WhatsApp/other browser me install option nahi hota).<br><br>Chrome me jao → app 1 minute use karo → <b>refresh</b> karo → ⋮ menu → <b>"Install app"</b>. Asli app home screen par aa jayegi.</div>',
             icon: 'info', confirmButtonText: 'OK', customClass: { popup: 'sw-dark' }
         });
     } else {
@@ -1002,3 +1011,18 @@ function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+/* ---------- SERVICE WORKER + AUTO-UPDATE ---------- */
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {});
+    });
+    let swReady = false;
+    navigator.serviceWorker.ready.then(() => { swReady = true; });
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (swReady && !sessionStorage.getItem('noor_reload_done')) {
+            sessionStorage.setItem('noor_reload_done', '1');
+            location.reload();
+        }
+    });
+}
