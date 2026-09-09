@@ -911,27 +911,53 @@ function clearAll() {
 let installPrompt = null;
 let installBtn = null;
 function setupInstall() {
+    const btn = $('installBtn');
+    if (btn) installBtn = btn;
     window.addEventListener('beforeinstallprompt', e => {
         e.preventDefault();
         installPrompt = e;
-        const btn = $('installBtn');
-        installBtn = btn;
-        if (btn) btn.style.display = '';
+        if (installBtn) {
+            installBtn.innerHTML = '<i class="bi bi-download"></i> Install App';
+        }
     });
     window.addEventListener('appinstalled', () => {
-        const btn = $('installBtn');
-        if (btn) btn.style.display = 'none';
-        if (installPrompt) installPrompt = null;
+        const b = $('installBtn');
+        if (b) { b.textContent = '✓ App Installed'; b.disabled = true; }
+        installPrompt = null;
     });
 }
 function installApp() {
-    if (!installPrompt) { toast('Install option available in browser menu (Add to Home Screen)', 'ok'); return; }
-    installPrompt.prompt();
-    installPrompt.userChoice.then(choice => {
-        if (choice.outcome === 'accepted') toast('App installed!', 'ok');
-        else toast('Install cancelled', 'err');
-        installPrompt = null;
-    });
+    if (installPrompt) {
+        installPrompt.prompt();
+        installPrompt.userChoice.then(choice => {
+            if (choice.outcome === 'accepted') toast('App installed! Home screen par icon aa gaya', 'ok');
+            else toast('Install cancelled', 'err');
+            installPrompt = null;
+        });
+        return;
+    }
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isAndroid = /android/i.test(navigator.userAgent);
+    const isChrome = /chrome|crios/i.test(navigator.userAgent);
+    if (isIOS) {
+        Swal.fire({
+            title: 'Install App (iPhone/iPad)',
+            html: '<div class="sd-card" style="text-align:left;font-size:.85rem">1. <b>Share</b> button tap karo (box + up arrow)<br><br>2. <b>Add to Home Screen</b> select karo<br><br>3. <b>Add</b> dabao — icon home screen par aa jayega</div>',
+            icon: 'info', confirmButtonText: 'OK', customClass: { popup: 'sw-dark' }
+        });
+    } else if (isAndroid && isChrome) {
+        Swal.fire({
+            title: 'Install App (Android Chrome)',
+            html: '<div class="sd-card" style="text-align:left;font-size:.85rem">Pehle <b>ek-bar aur page er refresh karo</b> (install ready hoga), phir dusre bar ye button dabao.<br><br>Ya browser ka <b>⋮ menu</b> kholo → <b>Install app</b> / <b>Add to Home screen</b>.</div>',
+            icon: 'info', confirmButtonText: 'OK', customClass: { popup: 'sw-dark' }
+        });
+    } else {
+        Swal.fire({
+            title: 'Install App',
+            html: '<div class="sd-card" style="text-align:left;font-size:.85rem">Browser ke menu mein <b>Install</b> ya <b>Add to Home Screen</b> option hota hai.<br><br>Desktop Chrome: address bar ke end par <b>⊕ Install</b> icon.<br><br>Mobile: <b>⋮</b> / <b>Share</b> → <b>Add to Home Screen</b>.</div>',
+            icon: 'info', confirmButtonText: 'OK', customClass: { popup: 'sw-dark' }
+        });
+    }
 }
 
 /* ---------- INIT ---------- */
