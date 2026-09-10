@@ -811,7 +811,7 @@ function applyBranding() {
     const t = document.querySelector('.tb-title');
     const sb = document.querySelector('.tb-sub');
     if (t) t.textContent = short;
-    if (sb) sb.textContent = sub || (short.toLowerCase() === 'noor' ? 'Tuition Center' : 'Tuition Center');
+    if (sb) sb.textContent = sub || 'Tuition Center';
     document.title = name + ' - Tuition Manager';
     if ($('helloSub')) $('helloSub').textContent = name;
 }
@@ -852,7 +852,7 @@ function exportBackup() {
 }
 function copyData() {
     const txt = JSON.stringify(appData);
-    const ok = function () { toast('Data copied — paste karo kisi bhi safe jagah', 'ok'); };
+    const ok = function () { toast('Data copied — store it somewhere safe', 'ok'); };
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(txt).then(ok).catch(function () { fallbackCopy(txt, ok); });
     } else fallbackCopy(txt, ok);
@@ -864,7 +864,7 @@ function fallbackCopy(txt, cb) {
     ta.style.opacity = '0';
     document.body.appendChild(ta);
     ta.select();
-    try { document.execCommand('copy'); if (cb) cb(); } catch (e) { toast('Copy nahi hua — Download use karo', 'err'); }
+    try { document.execCommand('copy'); if (cb) cb(); } catch (e) { toast('Copy failed — use Download instead', 'err'); }
     ta.remove();
 }
 function importFile(ev) {
@@ -877,7 +877,7 @@ function importFile(ev) {
 }
 function importFromText() {
     const raw = $('importText').value.trim();
-    if (!raw) return toast('Pehle backup data paste karo', 'err');
+    if (!raw) return toast('Paste your backup data first', 'err');
     tryImport(raw);
 }
 function tryImport(raw) {
@@ -900,7 +900,7 @@ function tryImport(raw) {
 function clearAll() {
     Swal.fire({
         title: 'Delete ALL data?',
-        html: 'Sab students, attendance aur fees records <b>hamesha ke liye</b> delete ho jayenge. Ye wapas nahi aa sakta.',
+        html: 'All students, attendance and fee records will be <b>permanently</b> deleted. This cannot be undone.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '<i class="bi bi-trash"></i> Yes, delete everything',
@@ -921,6 +921,7 @@ function clearAll() {
 }
 
 /* ---------- PWA INSTALL ---------- */
+const APP_VERSION = '6';
 let installPrompt = null;
 let installBtn = null;
 function setupInstall() {
@@ -929,14 +930,11 @@ function setupInstall() {
     window.addEventListener('beforeinstallprompt', e => {
         e.preventDefault();
         installPrompt = e;
-        if (installBtn) {
-            installBtn.innerHTML = '<i class="bi bi-download"></i> Install App';
-            installBtn.classList.remove('disabled');
-        }
+        if (installBtn) installBtn.innerHTML = '<i class="bi bi-download"></i> Install App';
     });
     window.addEventListener('appinstalled', () => {
         const b = $('installBtn');
-        if (b) { b.textContent = '✓ App Installed'; b.disabled = true; }
+        if (b) b.innerHTML = '<i class="bi bi-check2"></i> Installed';
         installPrompt = null;
     });
 }
@@ -944,45 +942,51 @@ function installApp() {
     if (window.matchMedia('(display-mode: standalone)').matches || (navigator.standalone === true)) {
         Swal.fire({
             title: 'App Already Installed',
-            html: '<div class="sd-card" style="text-align:left;font-size:.85rem">Ye app aapke phone par <b>already installed</b> hai — home screen / app list me "<b>Noor</b>" naam se dekho.</div>',
+            html: '<div class="sd-card" style="text-align:left;font-size:.85rem">This app is <b>already installed</b> on your device — look for "<b>Noor</b>" on your home screen or app list. It also works fully offline.</div>',
             icon: 'success', confirmButtonText: 'OK', customClass: { popup: 'sw-dark' }
         });
         return;
     }
     if (installPrompt) {
-        installPrompt.prompt();
-        installPrompt.userChoice.then(choice => {
-            if (choice.outcome === 'accepted') toast('App installed! Home screen par icon aa gaya', 'ok');
-            else toast('Install cancelled', 'err');
-            installPrompt = null;
-        });
-        return;
+        const p = installPrompt;
+        installPrompt = null;
+        try {
+            p.prompt();
+            p.userChoice.then(choice => {
+                if (choice.outcome === 'accepted') toast('App installed! Look for the icon on your home screen', 'ok');
+                else toast('Install cancelled', 'err');
+            }).catch(() => showInstallGuide());
+            return;
+        } catch (e) { showInstallGuide(); return; }
     }
+    showInstallGuide();
+}
+function showInstallGuide() {
     const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
     const isAndroid = /android/i.test(navigator.userAgent);
     const isChrome = /chrome|crios/i.test(navigator.userAgent);
     if (isIOS) {
         Swal.fire({
             title: 'Install App (iPhone/iPad)',
-            html: '<div class="sd-card" style="text-align:left;font-size:.85rem">1. <b>Share</b> button tap karo (box + up arrow)<br><br>2. <b>Add to Home Screen</b> select karo<br><br>3. <b>Add</b> dabao — icon home screen par aa jayega</div>',
+            html: '<div class="sd-card" style="text-align:left;font-size:.85rem">1. Tap the <b>Share</b> button (box with an up arrow)<br><br>2. Select <b>Add to Home Screen</b><br><br>3. Tap <b>Add</b> — the icon will appear on your home screen</div>',
             icon: 'info', confirmButtonText: 'OK', customClass: { popup: 'sw-dark' }
         });
     } else if (isAndroid && isChrome) {
         Swal.fire({
             title: 'Install App (Android)',
-            html: '<div class="sd-card" style="text-align:left;font-size:.85rem"><b>Step 1:</b> Ye app <b>1 minute chat use karo</b> (kisi student ko add karo ya koi page open karo) — Chrome tabhi install ka option deta hai jab app "use" hui ho.<br><br><b>Step 2:</b> Ab page <b>refresh karo</b> (🔄)<br><br><b>Step 3:</b> Chrome ka <b>⋮ menu</b> kholo → <b>"Install app"</b> dabao<br><br>⚠️ <b>"Add to Home screen"</b> mat dabana — wo sirf shortcut hai. <b>"Install app"</b> hi asli app hai jo app list + home screen dono me dikhti hai.</div>',
+            html: '<div class="sd-card" style="text-align:left;font-size:.85rem"><b>Step 1:</b> Use this app for <b>at least 1 minute</b> (add a student or open any page) — Chrome only offers install once the app has been "used".<br><br><b>Step 2:</b> Now <b>refresh</b> the page (🔄)<br><br><b>Step 3:</b> Open the Chrome <b>⋮ menu</b> → tap <b>"Install app"</b><br><br>⚠️ Avoid <b>"Add to Home screen"</b> — that only creates a shortcut. <b>"Install app"</b> is the real app that appears in both your app list and home screen.</div>',
             icon: 'info', confirmButtonText: 'OK', customClass: { popup: 'sw-dark' }
         });
     } else if (isAndroid) {
         Swal.fire({
             title: 'Install App (Android)',
-            html: '<div class="sd-card" style="text-align:left;font-size:.85rem"><b>Chrome browser</b> me is page ko kholo (WhatsApp/other browser me install option nahi hota).<br><br>Chrome me jao → app 1 minute use karo → <b>refresh</b> karo → ⋮ menu → <b>"Install app"</b>. Asli app home screen par aa jayegi.</div>',
+            html: '<div class="sd-card" style="text-align:left;font-size:.85rem">Open this page in the <b>Chrome browser</b> (WhatsApp and other browsers do not support installing).<br><br>In Chrome: use the app for 1 minute → <b>refresh</b> → open the ⋮ menu → tap <b>"Install app"</b>. The real app will appear on your home screen.</div>',
             icon: 'info', confirmButtonText: 'OK', customClass: { popup: 'sw-dark' }
         });
     } else {
         Swal.fire({
             title: 'Install App',
-            html: '<div class="sd-card" style="text-align:left;font-size:.85rem">Browser ke menu mein <b>Install</b> ya <b>Add to Home Screen</b> option hota hai.<br><br>Desktop Chrome: address bar ke end par <b>⊕ Install</b> icon.<br><br>Mobile: <b>⋮</b> / <b>Share</b> → <b>Add to Home Screen</b>.</div>',
+            html: '<div class="sd-card" style="text-align:left;font-size:.85rem">Your browser menu has an <b>Install</b> or <b>Add to Home Screen</b> option.<br><br>Desktop Chrome: look for the <b>⊕ Install</b> icon at the end of the address bar.<br><br>Mobile: <b>⋮</b> / <b>Share</b> → <b>Add to Home Screen</b>.</div>',
             icon: 'info', confirmButtonText: 'OK', customClass: { popup: 'sw-dark' }
         });
     }
@@ -995,6 +999,7 @@ function init() {
     setupInstall();
     applyBranding();
     fillClassOptions();
+    $('appVer').textContent = 'v' + APP_VERSION;
     $('attDate').value = todayISO();
     attDate = todayISO();
     fillFeeMonths(MONTHS[new Date().getMonth()]);

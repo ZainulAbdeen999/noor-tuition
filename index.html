@@ -47,7 +47,7 @@
         <div class="dash-hello">
             <div>
                 <div class="hello-eyebrow" id="helloEyebrow">—</div>
-                <h1 class="hello-title" id="helloTitle">Assalamu Alaikum 👋</h1>
+                <h1 class="hello-title" id="helloTitle">Welcome 👋</h1>
                 <p class="hello-muted" id="helloSub">Manage Noor Tuition Center</p>
             </div>
             <button class="fab-add" onclick="nav('add')"><i class="bi bi-plus-lg"></i></button>
@@ -292,7 +292,7 @@
             <button class="back-btn" onclick="nav('dashboard')"><i class="bi bi-arrow-left"></i></button>
             <div>
                 <h2 class="page-title">Settings</h2>
-                <p class="page-sub">Sab kuch yahan se manage karo</p>
+                <p class="page-sub">Manage everything from here</p>
             </div>
         </div>
 
@@ -314,14 +314,14 @@
 
         <div class="glass-card">
             <div class="gc-title" style="margin-bottom:6px"><i class="bi bi-phone me-1"></i> Install App</div>
-            <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px">App ko home screen par install karo — jaise koi mobile app. Bina internet ke bhi chalega.</p>
+            <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px">Install the app on your home screen — it works like a native app, even without internet.</p>
             <button class="btn-main" id="installBtn" onclick="installApp()"><i class="bi bi-download"></i> Install App</button>
-            <p style="font-size:.72rem;color:var(--muted);margin:10px 0 0" id="installHint">Browsers menu mein bhi "Add to Home Screen" / "Install app" option hai.</p>
+            <p style="font-size:.72rem;color:var(--muted);margin:10px 0 0" id="installHint">Your browser menu also has an "Add to Home Screen" / "Install app" option.</p>
         </div>
 
         <div class="glass-card">
             <div class="gc-title" style="margin-bottom:6px"><i class="bi bi-arrow-repeat me-1"></i> Backup / Move Data</div>
-            <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px">Kisi aur phone/computer par same data chalana ho to: yahan <b>Download/Copy</b> karo → dusri device par app mein <b>Import</b> karo. Data cloud mein nahi jaata — sirf aapki device par rehta hai.</p>
+            <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px">To use your data on another phone or computer: <b>Download/Copy</b> here, then <b>Import</b> it inside the app on the other device. Data never goes to the cloud — it stays on your device only.</p>
             <input type="file" id="fileImport" accept=".json,application/json" style="display:none" onchange="importFile(event)">
             <div class="f-group" style="margin-bottom:10px">
                 <label>Import from file</label>
@@ -341,10 +341,10 @@
         <div class="glass-card" style="border-color:rgba(248,113,113,.35)">
             <div class="gc-title" style="margin-bottom:10px;color:var(--red)"><i class="bi bi-exclamation-triangle me-1"></i> Delete All Data</div>
             <button class="btn-soft red full" onclick="clearAll()"><i class="bi bi-trash"></i> Erase Everything</button>
-            <p style="font-size:.72rem;color:var(--muted);margin:10px 0 0">Sab students, attendance aur fees records hamesha ke liye delete ho jayenge.</p>
+            <p style="font-size:.72rem;color:var(--muted);margin:10px 0 0">All students, attendance and fee records will be permanently deleted.</p>
         </div>
 
-        <p style="text-align:center;font-size:.7rem;color:var(--muted);margin:8px 0 20px">NoorEdu v4 · fully offline · data stays on this device</p>
+        <p style="text-align:center;font-size:.7rem;color:var(--muted);margin:8px 0 20px">NoorEdu <span id="appVer">v1</span> · offline-first · data stays on your device</p>
     </section>
 
 </main>

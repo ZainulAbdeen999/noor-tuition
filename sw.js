@@ -1,5 +1,5 @@
 /* NoorEdu service worker - network-first (always get latest, cache for offline) */
-const CACHE = 'nooredu-v5';
+const CACHE = 'nooredu-v6';
 const APP_SHELL = [
     './',
     './index.html',
